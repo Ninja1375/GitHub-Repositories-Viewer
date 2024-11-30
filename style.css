@@ -1,0 +1,147 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header {
+  width: 100%;
+  background-color: #161b22;
+  color: #58a6ff;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+input[type="text"] {
+  padding: 10px;
+  border: 1px solid #30363d;
+  border-radius: 5px;
+  background-color: #161b22;
+  color: #c9d1d9;
+  width: 100%;
+  max-width: 400px;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #238636;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2ea043;
+}
+
+.repo {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f6f8fa;
+}
+
+.repo h3 a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.repo p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.repo strong {
+  font-weight: bold;
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
+  background-color: #161b22;
+  color: #8b949e;
+  padding: 15px 0;
+  font-size: 1rem;
+}
+
+.footer a {
+  color: #58a6ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input[type="text"], button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.sponsor-box {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.sponsor-button {
+  padding: 10px 20px;
+  background-color: #bf4b8a;
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.sponsor-button:hover {
+  background-color: #a64077;
+}
+
+.error {
+  color: #f85149;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+}
