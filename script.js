@@ -1,5 +1,7 @@
+// Adicione a configuração para carregar variáveis de ambiente
 require('dotenv').config();
 
+// Carrega o token do GitHub a partir da variável de ambiente
 const GITHUB_TOKEN = process.env.TOKEN_GITHUB;
 
 document.getElementById("searchBtn").addEventListener("click", async () => {
