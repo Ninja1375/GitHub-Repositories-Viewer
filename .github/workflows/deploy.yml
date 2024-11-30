@@ -1,31 +1,34 @@
-name: Deploy
+name: Deploy GitHub Pages
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Adiciona a capacidade de execução manual
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '14'
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
 
-    - name: Build the project
-      run: npm run build
-
-    - name: Deploy
-      run: npm run deploy
+    - name: Inject GitHub Token
       env:
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        echo "window.GITHUB_TOKEN='${TOKEN_GITHUB}';" > token.js
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
