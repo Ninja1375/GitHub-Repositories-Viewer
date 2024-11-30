@@ -1,0 +1,12 @@
+{
+  "name": "github-proxy",
+  "version": "1.0.0",
+  "main": "githubProxy.js",
+  "scripts": {
+    "start": "node githubProxy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.1"
+  }
+}
