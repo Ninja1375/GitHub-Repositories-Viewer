@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # Adiciona a capacidade de execução manual
 
 jobs:
   deploy:
