@@ -1,63 +1,75 @@
-// Adicione a configuração para carregar variáveis de ambiente
-require('dotenv').config();
-
-// Carrega o token do GitHub a partir da variável de ambiente
-const GITHUB_TOKEN = process.env.TOKEN_GITHUB;
-
-document.getElementById("searchBtn").addEventListener("click", async () => {
-  const username = document.getElementById("username").value.trim();
-  const repoList = document.getElementById("repoList");
-
-  // Limpa a lista de repositórios
-  repoList.innerHTML = "";
-
-  if (!username) {
-    repoList.innerHTML = `<p class="error">Por favor, insira um nome de usuário do GitHub.</p>`;
-    return;
-  }
-
-  try {
-    // Faz a requisição à API do GitHub com autenticação (opcional)
-    const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`, {
-      headers: GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}
-    });
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error("Limite de requisições excedido. Tente novamente mais tarde.");
-      } else if (response.status === 404) {
-        throw new Error("Usuário não encontrado.");
-      } else {
-        throw new Error("Ocorreu um erro ao buscar os dados.");
-      }
+document.getElementById("searchButton").addEventListener("click", async () => {
+    const username = document.getElementById("username").value;
+    if (!username) {
+        alert("Por favor, insira um nome de usuário do GitHub.");
+        return;
     }
 
-    const repositories = await response.json();
+    // Carregar o token de forma segura
+    const token = await fetchToken();
 
-    if (repositories.length === 0) {
-      repoList.innerHTML = `<p class="error">Este usuário não possui repositórios públicos.</p>`;
-      return;
+    if (!token) {
+        alert("Token não encontrado ou inválido.");
+        return;
     }
 
-    // Exibe os repositórios
-    repositories.forEach(repo => {
-      const repoElement = document.createElement("div");
-      repoElement.classList.add("repo");
+    const url = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`;
 
-      // Monta o conteúdo do repositório
-      repoElement.innerHTML = `
-        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-        <p>${repo.description || "Sem descrição disponível."}</p>
-        <p><strong>🌟 Estrelas:</strong> ${repo.stargazers_count}</p>
-        <p><strong>🍴 Forks:</strong> ${repo.forks_count}</p>
-        <p><strong>📅 Criado em:</strong> ${new Date(repo.created_at).toLocaleDateString()}</p>
-        <p><strong>🔄 Última atualização:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
-      `;
+    try {
+        const response = await fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
 
-      repoList.appendChild(repoElement);
-    });
-  } catch (error) {
-    // Trata erros e exibe uma mensagem para o usuário
-    repoList.innerHTML = `<p class="error">${error.message}</p>`;
-  }
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);
+        }
+
+        const repos = await response.json();
+        displayRepositories(repos);
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao buscar os repositórios. Verifique o nome de usuário ou tente novamente mais tarde.");
+    }
 });
+
+async function fetchToken() {
+    try {
+        const response = await fetch("token.js");
+        if (response.ok) {
+            const script = await response.text();
+            eval(script); // Define window.GITHUB_TOKEN dinamicamente
+            return window.GITHUB_TOKEN;
+        } else {
+            console.error("Não foi possível carregar o token.js");
+            return null;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar o token:", error);
+        return null;
+    }
+}
+
+function displayRepositories(repos) {
+    const repoList = document.getElementById("repoList");
+    repoList.innerHTML = ""; // Limpa a lista anterior
+
+    if (repos.length === 0) {
+        repoList.innerHTML = "<p>Nenhum repositório encontrado.</p>";
+        return;
+    }
+
+    repos.forEach(repo => {
+        const repoItem = document.createElement("div");
+        repoItem.className = "repo-item";
+        repoItem.innerHTML = `
+            <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+            <p>${repo.description || "Sem descrição"}</p>
+            <p><strong>⭐ Stars:</strong> ${repo.stargazers_count}</p>
+            <p><strong>🔀 Forks:</strong> ${repo.forks_count}</p>
+            <p><strong>📅 Atualizado em:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
+        `;
+        repoList.appendChild(repoItem);
+    });
+}
