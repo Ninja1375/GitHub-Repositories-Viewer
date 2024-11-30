@@ -5,22 +5,10 @@ document.getElementById("searchButton").addEventListener("click", async () => {
         return;
     }
 
-    // Carregar o token de forma segura
-    const token = await fetchToken();
-
-    if (!token) {
-        alert("Token não encontrado ou inválido.");
-        return;
-    }
-
-    const url = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`;
+    const url = `https://seu-app.railway.app/repos?username=${username}`;
 
     try {
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);
@@ -33,23 +21,6 @@ document.getElementById("searchButton").addEventListener("click", async () => {
         alert("Erro ao buscar os repositórios. Verifique o nome de usuário ou tente novamente mais tarde.");
     }
 });
-
-async function fetchToken() {
-    try {
-        const response = await fetch("token.js");
-        if (response.ok) {
-            const script = await response.text();
-            eval(script); // Define window.GITHUB_TOKEN dinamicamente
-            return window.GITHUB_TOKEN;
-        } else {
-            console.error("Não foi possível carregar o token.js");
-            return null;
-        }
-    } catch (error) {
-        console.error("Erro ao carregar o token:", error);
-        return null;
-    }
-}
 
 function displayRepositories(repos) {
     const repoList = document.getElementById("repoList");
