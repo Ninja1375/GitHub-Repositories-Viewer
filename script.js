@@ -1,13 +1,16 @@
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
+// Obtém o token a partir da variável de ambiente
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 if (!GITHUB_TOKEN) {
-  throw new Error("Token não encontrado. Certifique-se de que o segredo foi carregado corretamente.");
+  throw new Error("Token não encontrado. Certifique-se de configurar a variável de ambiente.");
 }
 
+// Adiciona um evento ao botão de busca
 document.getElementById("searchBtn").addEventListener("click", async () => {
   const username = document.getElementById("username").value.trim();
   const repoList = document.getElementById("repoList");
 
+  // Limpa a lista de repositórios
   repoList.innerHTML = "";
 
   if (!username) {
@@ -16,12 +19,22 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
   }
 
   try {
-    const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`, {
-      headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
-    });
+    // Faz a requisição à API do GitHub usando o token
+    const response = await fetch(
+      `https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`,
+      {
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
+      }
+    );
 
     if (!response.ok) {
-      throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      if (response.status === 403) {
+        throw new Error("Limite de requisições excedido. Tente novamente mais tarde.");
+      } else if (response.status === 404) {
+        throw new Error("Usuário não encontrado.");
+      } else {
+        throw new Error("Ocorreu um erro ao buscar os dados.");
+      }
     }
 
     const repositories = await response.json();
@@ -31,9 +44,11 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
       return;
     }
 
+    // Exibe os repositórios
     repositories.forEach((repo) => {
       const repoElement = document.createElement("div");
       repoElement.classList.add("repo");
+
       repoElement.innerHTML = `
         <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
         <p>${repo.description || "Sem descrição disponível."}</p>
@@ -42,9 +57,11 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
         <p><strong>📅 Criado em:</strong> ${new Date(repo.created_at).toLocaleDateString()}</p>
         <p><strong>🔄 Última atualização:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
       `;
+
       repoList.appendChild(repoElement);
     });
   } catch (error) {
+    // Trata erros e exibe uma mensagem para o usuário
     repoList.innerHTML = `<p class="error">${error.message}</p>`;
   }
 });
