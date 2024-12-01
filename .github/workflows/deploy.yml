@@ -19,9 +19,17 @@ jobs:
       with:
         node-version: '16'
 
+    - name: Listar arquivos no repositório
+      run: ls -la
+
     - name: Executar script com token do segredo
       env:
         GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_TOKEN }}
       run: |
-        echo "Executando script com token seguro"
+        echo "Verificando o token..."
+        if [ -z "$GITHUB_TOKEN" ]; then
+          echo "Token não encontrado!"
+          exit 1
+        fi
+        echo "Executando script.js..."
         node script.js
