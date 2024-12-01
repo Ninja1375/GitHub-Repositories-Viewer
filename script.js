@@ -11,7 +11,7 @@ document.getElementById('searchButton').addEventListener('click', async function
     }
 
     try {
-        const response = await fetch(`https://seu-app.up.railway.app/repos?username=${username}`);
+        const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`);
         
         // Verifica se a resposta é válida
         if (!response.ok) {
