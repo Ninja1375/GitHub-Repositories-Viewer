@@ -58,3 +58,13 @@ A interface é simples, sem muitas distrações, com uma experiência de usuári
 ## Objetivo do Projeto:
 
 O principal objetivo deste projeto é oferecer uma maneira rápida e prática para os desenvolvedores explorarem os repositórios de outros usuários do GitHub. Ele serve como uma ferramenta para visualizar repositórios de maneira centralizada, permitindo o acompanhamento de projetos interessantes e facilitando a pesquisa de código aberto.
+
+## Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para:
+
+`Relatar problemas.`
+
+`Sugerir melhorias.`
+
+`Enviar solicitações pull.`
