@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Executar script com token do segredo
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_TOKEN }}
+      run: |
+        echo "Executando script com token seguro"
+        node script.js
