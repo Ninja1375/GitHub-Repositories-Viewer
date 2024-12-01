@@ -1,11 +1,20 @@
-// Obtém o token a partir da variável de ambiente
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// Obtém o token através de uma API serverless do Netlify
+const fetchToken = async () => {
+  try {
+    // Busca o token de uma função serverless configurada no Netlify
+    const response = await fetch('/.netlify/functions/get-token');
+    if (!response.ok) {
+      throw new Error('Erro ao obter o token. Verifique a configuração do Netlify.');
+    }
+    const data = await response.json();
+    return data.token;
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+};
 
-if (!GITHUB_TOKEN) {
-  throw new Error("Token não encontrado. Certifique-se de configurar a variável de ambiente.");
-}
-
-// Adiciona um evento ao botão de busca
+// Função para buscar repositórios no GitHub
 document.getElementById("searchBtn").addEventListener("click", async () => {
   const username = document.getElementById("username").value.trim();
   const repoList = document.getElementById("repoList");
@@ -19,7 +28,15 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
   }
 
   try {
-    // Faz a requisição à API do GitHub usando o token
+    // Obtém o token de forma segura
+    const GITHUB_TOKEN = await fetchToken();
+
+    if (!GITHUB_TOKEN) {
+      repoList.innerHTML = `<p class="error">Erro ao obter o token de autenticação.</p>`;
+      return;
+    }
+
+    // Faz a requisição à API do GitHub com o token
     const response = await fetch(
       `https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`,
       {
