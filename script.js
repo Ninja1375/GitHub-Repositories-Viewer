@@ -1,11 +1,13 @@
-// Adicione o token gerado no GitHub como uma variável de ambiente (via GitHub Actions)
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
+
+if (!GITHUB_TOKEN) {
+  throw new Error("Token não encontrado. Certifique-se de que o segredo foi carregado corretamente.");
+}
 
 document.getElementById("searchBtn").addEventListener("click", async () => {
   const username = document.getElementById("username").value.trim();
   const repoList = document.getElementById("repoList");
 
-  // Limpa a lista de repositórios
   repoList.innerHTML = "";
 
   if (!username) {
@@ -14,19 +16,12 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
   }
 
   try {
-    // Faz a requisição à API do GitHub com autenticação (opcional)
     const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`, {
-      headers: GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
     });
 
     if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error("Limite de requisições excedido. Tente novamente mais tarde.");
-      } else if (response.status === 404) {
-        throw new Error("Usuário não encontrado.");
-      } else {
-        throw new Error("Ocorreu um erro ao buscar os dados.");
-      }
+      throw new Error(`Erro ${response.status}: ${response.statusText}`);
     }
 
     const repositories = await response.json();
@@ -36,12 +31,9 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
       return;
     }
 
-    // Exibe os repositórios
-    repositories.forEach(repo => {
+    repositories.forEach((repo) => {
       const repoElement = document.createElement("div");
       repoElement.classList.add("repo");
-
-      // Monta o conteúdo do repositório
       repoElement.innerHTML = `
         <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
         <p>${repo.description || "Sem descrição disponível."}</p>
@@ -50,11 +42,9 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
         <p><strong>📅 Criado em:</strong> ${new Date(repo.created_at).toLocaleDateString()}</p>
         <p><strong>🔄 Última atualização:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
       `;
-
       repoList.appendChild(repoElement);
     });
   } catch (error) {
-    // Trata erros e exibe uma mensagem para o usuário
     repoList.innerHTML = `<p class="error">${error.message}</p>`;
   }
 });
