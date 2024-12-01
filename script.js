@@ -5,7 +5,7 @@ document.getElementById("searchButton").addEventListener("click", async () => {
         return;
     }
 
-    const url = `https://seu-app.railway.app/repos?username=${username}`;
+    const url = `https://github-repositories-viewer-tokengithub.up.railway.app/repos?username=${username}`;
 
     try {
         const response = await fetch(url);
