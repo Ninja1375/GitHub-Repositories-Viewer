@@ -1,46 +1,48 @@
-document.getElementById("searchButton").addEventListener("click", async () => {
-    const username = document.getElementById("username").value;
+document.getElementById('searchButton').addEventListener('click', async function() {
+    const username = document.getElementById('username').value;
+    const resultContainer = document.getElementById('repoResults');
+
+    // Limpar resultados anteriores
+    resultContainer.innerHTML = '';
+
     if (!username) {
-        alert("Por favor, insira um nome de usuário do GitHub.");
+        alert('Por favor, insira o nome de usuário do GitHub.');
         return;
     }
 
-    const url = `https://github-repositories-viewer-tokengithub.up.railway.app/repos?username=${username}`;
-
     try {
-        const response = await fetch(url);
-
+        const response = await fetch(`https://seu-app.up.railway.app/repos?username=${username}`);
+        
+        // Verifica se a resposta é válida
         if (!response.ok) {
-            throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);
+            throw new Error(`Erro: ${response.statusText}`);
         }
 
         const repos = await response.json();
-        displayRepositories(repos);
+
+        if (repos.length === 0) {
+            resultContainer.innerHTML = '<p>Nenhum repositório encontrado.</p>';
+            return;
+        }
+
+        repos.forEach(repo => {
+            const repoElement = document.createElement('div');
+            repoElement.classList.add('repo');
+
+            // Exibe as informações do repositório
+            repoElement.innerHTML = `
+                <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                <p><strong>Descrição:</strong> ${repo.description || 'Sem descrição'}</p>
+                <p><strong>Estrelas:</strong> ${repo.stargazers_count}</p>
+                <p><strong>Forks:</strong> ${repo.forks_count}</p>
+                <p><strong>Data de Criação:</strong> ${new Date(repo.created_at).toLocaleDateString()}</p>
+                <p><strong>Última Atualização:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
+            `;
+
+            resultContainer.appendChild(repoElement);
+        });
+
     } catch (error) {
-        console.error(error);
-        alert("Erro ao buscar os repositórios. Verifique o nome de usuário ou tente novamente mais tarde.");
+        resultContainer.innerHTML = `<p>Erro: ${error.message}</p>`;
     }
 });
-
-function displayRepositories(repos) {
-    const repoList = document.getElementById("repoList");
-    repoList.innerHTML = ""; // Limpa a lista anterior
-
-    if (repos.length === 0) {
-        repoList.innerHTML = "<p>Nenhum repositório encontrado.</p>";
-        return;
-    }
-
-    repos.forEach(repo => {
-        const repoItem = document.createElement("div");
-        repoItem.className = "repo-item";
-        repoItem.innerHTML = `
-            <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-            <p>${repo.description || "Sem descrição"}</p>
-            <p><strong>⭐ Stars:</strong> ${repo.stargazers_count}</p>
-            <p><strong>🔀 Forks:</strong> ${repo.forks_count}</p>
-            <p><strong>📅 Atualizado em:</strong> ${new Date(repo.updated_at).toLocaleDateString()}</p>
-        `;
-        repoList.appendChild(repoItem);
-    });
-}
