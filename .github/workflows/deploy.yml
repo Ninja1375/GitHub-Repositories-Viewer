@@ -19,17 +19,23 @@ jobs:
       with:
         node-version: '16'
 
-    - name: Listar arquivos no repositório
-      run: ls -la
+    - name: Verificar arquivos no repositório
+      run: ls -R
 
-    - name: Executar script com token do segredo
+    - name: Verificar token
+      run: |
+        if [ -z "$GITHUB_TOKEN" ]; then
+          echo "Token não carregado!"
+          exit 1
+        else
+          echo "Token carregado com sucesso!"
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_TOKEN }}
+
+    - name: Executar script.js
       run: |
-        echo "Verificando o token..."
-        if [ -z "$GITHUB_TOKEN" ]; then
-          echo "Token não encontrado!"
-          exit 1
-        fi
-        echo "Executando script.js..."
+        echo "Iniciando script.js"
         node script.js
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_TOKEN }}
